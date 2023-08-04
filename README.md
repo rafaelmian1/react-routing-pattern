@@ -1,44 +1,31 @@
-# Type-Safe and Scalable Routing for React Web Apps
+# Type-Safe and Scalable React Web App Routing
 
-This README.md describes an architectural/design pattern for building type-safe and scalable routing in a React web app. The pattern uses TypeScript to ensure type safety in routing and leverages the `react-router-dom` library for navigation.
+In this documentation, we will explore an architectural/design pattern focused on type-safe and scalable practices for routing a React web app. The implementation uses TypeScript and React Router to achieve type safety while routing and provides a structured approach for handling different navigation scenarios.
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Navigation Structure](#navigation-structure)
+   - [Root Navigation](#root-navigation)
+   - [Account Navigation](#account-navigation)
+3. [Key Components](#key-components)
+   - [`useNavigate` Hook](#usenavigate-hook)
+   - [`RouterWrapper` Component](#routerwrapper-component)
+4. [Implementation](#implementation)
+5. [Usage](#usage)
 
 ## Introduction
 
-Routing is a crucial part of any web application. It determines how different components or pages are accessed based on the URL. In large-scale applications, maintaining routing can become complex and error-prone. This pattern aims to provide a scalable and type-safe approach to handle routing in React apps.
+This architectural pattern leverages TypeScript and React Router to create a type-safe and scalable navigation system for a React web app.
 
-## Prerequisites
+## Implementation
 
-To follow this pattern, you should have a good understanding of:
+### Account Routes Definitions
 
-- React and React components
-- TypeScript
-- `react-router-dom` library
+The `AccountNavigationRoutes` enum defines the different routes within the account section, such as `EditProfile` and `Settings`. The `AccountNavigationParams` type defines the parameter structure for each account route.
 
-## Folder Structure
-
-Before diving into the implementation, let's establish a standard folder structure for the routing-related files. This will help organize the code and make it easier to maintain as the application grows:
-
-```
-src/
-  |- components/      // Reusable UI components
-  |- pages/           // Page components
-  |- navigation/      // Routing-related files
-    |- hooks/         // Custom hooks for navigation
-    |- wrappers/      // Wrapper components for route rendering
-    |- Root/          // Root-level routing
-    |- Account/       // Account-related routing
-```
-
-## Type-Safe Routing
-
-One of the main goals of this pattern is to ensure type safety in routing. We achieve this by defining enums and associated type definitions for each route and its corresponding parameters.
-
-### Example: Account Routes and Params
-
-Let's see how we define type-safe routing for the Account section of the app:
-
-```typescript
-// File: navigation/Account/def.ts
+```tsx
+//navigation/Account/def.ts
 
 export enum AccountNavigationRoutes {
   EditProfile = 'EditProfile',
@@ -53,14 +40,46 @@ export type AccountNavigationParams = {
 };
 ```
 
-Here, we define `AccountNavigationRoutes` as an enum representing the available routes in the Account section. `AccountNavigationParams` is a type that maps each route to its corresponding set of parameters.
+### Account Routes Implementation
 
-### Root Navigation Params
+The `accountRoutes` array defines the account section's routing configuration. It includes child routes for `Settings` and `EditProfile`, where `EditProfile` has additional route-specific parameters. The `RouteWrapper` component is used to handle parameter passing for `EditProfile`.
 
-Next, we define the root-level routing and its parameters:
+```tsx
+//navigation/Account/index.tsx
 
-```typescript
-// File: navigation/Root/def.ts
+import {RouteObject} from 'react-router-dom';
+import {RouteWrapper} from '@navigation/wrapper';
+import {RootNavigationRoutes} from '@navigation/Root/def';
+import {AccountNavigationParams, AccountNavigationRoutes} from './def';
+import {EditProfilePage} from '@pages/EditProfile';
+import {SettingsPage} from '@pages/Settings';
+
+export const accountRoutes: RouteObject[] = [
+  {
+    path: RootNavigationRoutes.Account,
+    children: [
+      {path: AccountNavigationRoutes.Settings, element: <SettingsPage />},
+      {
+        path: AccountNavigationRoutes.EditProfile,
+        element: (
+          <RouteWrapper<
+            AccountNavigationParams[AccountNavigationRoutes.EditProfile]
+          >>
+            {(props) => <EditProfilePage {...props} />}
+          </RouteWrapper>
+        ),
+      },
+    ],
+  },
+];
+```
+
+### Root Routes Definitions
+
+The `RootNavigationRoutes` enum defines the root-level routes of the application, including `Home` and `Account`. The `RootNavigationParams` type defines the parameter structure for each root route, where `Account` includes account-specific parameters.
+
+```tsx
+//navigation/Root/def.ts
 
 import {AccountNavigationParams} from '../Account/def';
 
@@ -83,14 +102,82 @@ export type RootNavigationParams = {
 };
 ```
 
-In `RootNavigationParams`, we use conditional types to map each root-level route to its corresponding set of parameters.
+### Root Routes Implementation
 
-## Custom Navigation Hook
+The `rootRoutes` array defines the root-level routing configuration, including the default route for `Home` and the `HomePage` component.
 
-To enable type-safe navigation, we create a custom hook called `useNavigate`. This hook takes care of navigating to different routes while ensuring type safety in passing parameters.
+```tsx
+//navigation/Root/index.tsx
 
-```typescript
-// File: navigation/hook.ts
+import {Navigate, RouteObject} from 'react-router-dom';
+import {RootNavigationRoutes} from './def';
+import {HomePage} from '@pages/Home';
+
+export const rootRoutes: RouteObject[] = [
+  {path: '*', element: <Navigate to={RootNavigationRoutes.Home} replace />},
+  {path: RootNavigationRoutes.Home, element: <HomePage />},
+];
+```
+
+### Router Setup
+
+The `Routes` component is used to set up the router by combining the root-level and account-level routes. It uses the `createBrowserRouter` function to create the router with the defined routes.
+
+```tsx
+//navigation/index.tsx
+
+import {RouterProvider, createBrowserRouter} from 'react-router-dom';
+import {accountRoutes} from './Account';
+import {rootRoutes} from './Root';
+
+const router = createBrowserRouter([
+  ...rootRoutes, 
+  ...accountRoutes
+]);
+
+export const Routes = () => {
+  return <RouterProvider router={router} />;
+};
+
+//App.tsx
+
+import {Routes} from '@navigation/index';
+
+const App = () => {
+  return <Routes />;
+};
+
+export default App;
+```
+
+### `RouterWrapper` Component Implementation
+
+The `RouterWrapper` component is used to wrap child components and pass down the route parameters as props. This allows components to receive and use the correct route-specific parameters.
+
+```tsx
+//navigation/wrapper.tsx;
+
+import {FC} from 'react';
+import {useLocation} from 'react-router-dom';
+
+type RouteWrapperProps<T> = {
+  children: FC<T>;
+};
+
+export const RouteWrapper = <T extends object>(props: RouteWrapperProps<T>) => {
+  const {state} = useLocation();
+  const childrenProps = state as T;
+
+  return props.children(childrenProps);
+};
+```
+
+### `useNavigate` Hook Implementation
+
+The `useNavigate` hook is implemented to provide a type-safe way to navigate between different routes. It takes care of handling both root-level and account-level routes and their respective parameters.
+
+```tsx
+//navigation/hook.ts
 
 import {useNavigate as useNavigateHook} from 'react-router-dom';
 import {RootNavigationParams} from './Root/def';
@@ -121,73 +208,16 @@ export const useNavigate = (): NavigateFunction => {
 };
 ```
 
-The `useNavigate` hook intelligently handles parameter passing and ensures that only valid routes and parameters can be accessed.
-
-## Routing Configuration
-
-Now, we can configure the routes in each section of the app and compose them in the root-level routing.
-
-### Example: Account Routes
-
-```typescript
-// File: navigation/Account/index.tsx
-
-import {RouteObject} from 'react-router-dom';
-import {RootNavigationRoutes} from '@navigation/Root/def';
-import {AccountNavigationParams, AccountNavigationRoutes} from './def';
-import {EditProfilePage} from '@pages/EditProfile';
-import {SettingsPage} from '@pages/Settings';
-import {RouteWrapper} from '@navigation/wrapper';
-
-export const accountRoutes: RouteObject[] = [
-  {
-    path: RootNavigationRoutes.Account,
-    children: [
-      {path: AccountNavigationRoutes.Settings, element: <SettingsPage />},
-      {
-        path: AccountNavigationRoutes.EditProfile,
-        element: (
-          <RouteWrapper<
-            AccountNavigationParams[AccountNavigationRoutes.EditProfile]
-          >>
-            {(props) => <EditProfilePage {...props} />}
-          </RouteWrapper>
-        ),
-      },
-    ],
-  },
-];
-```
-
-### Root-Level Routes
-
-Finally, we compose the root-level routes and create the main routing configuration for the app:
-
-```typescript
-// File: navigation/index.tsx
-
-import {RouterProvider, createBrowserRouter} from 'react-router-dom';
-import {rootRoutes} from './Root';
-import {accountRoutes} from './Account';
-
-const router = create;
-
-BrowserRouter([...rootRoutes, ...accountRoutes]);
-
-export const Routes = () => {
-  return <RouterProvider router={router} />;
-};
-```
-
 ## Usage
 
-Now, you can use the `useNavigate` hook and the defined routes to navigate through different sections of the app in a type-safe manner.
+The application uses the implemented routing pattern to navigate between different pages. Components like `HomePage`, `EditProfilePage`, and `SettingsPage` are defined as part of the application's pages.
 
-### Example: Home Page
+The `HomePage` component demonstrates how to use the `useNavigate` hook to navigate to different account routes with specific parameters.
 
-```typescript
-// File: pages/Home/index.tsx
+```tsx
+//pages/Home/index.tsx
 
+import {AccountNavigationRoutes} from '@navigation/Account/def';
 import {RootNavigationRoutes} from '@navigation/Root/def';
 import {useNavigate} from '@navigation/hook';
 
@@ -221,6 +251,4 @@ export const HomePage = () => {
 };
 ```
 
-## Conclusion
-
-By following this architectural/design pattern, you can build a type-safe and scalable routing system for your React web app. The use of TypeScript, enums, and custom hooks ensures that you can navigate through the app with confidence and avoid common routing-related errors. This pattern is suitable for large-scale applications where routing can become complex and needs to be maintained efficiently. Happy coding!
+By using this architectural/design pattern, you can ensure type safety and scalability while navigating through different routes in your React web app. The separation of root and account navigation provides a clean and organized structure, making it easier to manage complex navigation scenarios. Additionally, the `useNavigate` hook ensures that route parameters are correctly handled and passed down to child components.
