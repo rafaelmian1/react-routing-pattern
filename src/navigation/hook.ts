@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router-dom';
+import {useNavigate as useNavigateHook} from 'react-router-dom';
 import {RootNavigationParams} from './Root/def';
 
 const makeRoute = (...route: string[]) => {
@@ -12,8 +12,8 @@ type NavigateFunction = <T extends keyof RootNavigationParams>(
     : [rootRoute: T, params: RootNavigationParams[T]]
 ) => void;
 
-export const useNavigateOnAuthorized = (): NavigateFunction => {
-  const navigate = useNavigate();
+export const useNavigate = (): NavigateFunction => {
+  const navigate = useNavigateHook();
 
   return (...args) => {
     const rootRoute = args[0];

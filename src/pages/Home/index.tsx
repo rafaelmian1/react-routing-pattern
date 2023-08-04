@@ -1,9 +1,9 @@
 import {AccountNavigationRoutes} from '@navigation/Account/def';
 import {RootNavigationRoutes} from '@navigation/Root/def';
-import {useNavigateOnAuthorized} from '@navigation/hook';
+import {useNavigate} from '@navigation/hook';
 
 export const HomePage = () => {
-  const navigate = useNavigateOnAuthorized();
+  const navigate = useNavigate();
   return (
     <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
       <button

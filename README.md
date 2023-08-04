@@ -87,7 +87,7 @@ In `RootNavigationParams`, we use conditional types to map each root-level route
 
 ## Custom Navigation Hook
 
-To enable type-safe navigation, we create a custom hook called `useNavigateOnAuthorized`. This hook takes care of navigating to different routes while ensuring type safety in passing parameters.
+To enable type-safe navigation, we create a custom hook called `useNavigate`. This hook takes care of navigating to different routes while ensuring type safety in passing parameters.
 
 ```typescript
 // File: navigation/hook.ts
@@ -106,7 +106,7 @@ type NavigateFunction = <T extends keyof RootNavigationParams>(
     : [rootRoute: T, params: RootNavigationParams[T]]
 ) => void;
 
-export const useNavigateOnAuthorized = (): NavigateFunction => {
+export const useNavigate = (): NavigateFunction => {
   const navigate = useNavigate();
 
   return (...args) => {
@@ -121,7 +121,7 @@ export const useNavigateOnAuthorized = (): NavigateFunction => {
 };
 ```
 
-The `useNavigateOnAuthorized` hook intelligently handles parameter passing and ensures that only valid routes and parameters can be accessed.
+The `useNavigate` hook intelligently handles parameter passing and ensures that only valid routes and parameters can be accessed.
 
 ## Routing Configuration
 
@@ -181,7 +181,7 @@ export const Routes = () => {
 
 ## Usage
 
-Now, you can use the `useNavigateOnAuthorized` hook and the defined routes to navigate through different sections of the app in a type-safe manner.
+Now, you can use the `useNavigate` hook and the defined routes to navigate through different sections of the app in a type-safe manner.
 
 ### Example: Home Page
 
@@ -189,10 +189,10 @@ Now, you can use the `useNavigateOnAuthorized` hook and the defined routes to na
 // File: pages/Home/index.tsx
 
 import {RootNavigationRoutes} from '@navigation/Root/def';
-import {useNavigateOnAuthorized} from '@navigation/hook';
+import {useNavigate} from '@navigation/hook';
 
 export const HomePage = () => {
-  const navigate = useNavigateOnAuthorized();
+  const navigate = useNavigate();
 
   return (
     <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
