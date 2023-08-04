@@ -92,7 +92,7 @@ To enable type-safe navigation, we create a custom hook called `useNavigate`. Th
 ```typescript
 // File: navigation/hook.ts
 
-import {useNavigate} from 'react-router-dom';
+import {useNavigate as useNavigateHook} from 'react-router-dom';
 import {RootNavigationParams} from './Root/def';
 
 const makeRoute = (...route: string[]) => {
@@ -107,7 +107,7 @@ type NavigateFunction = <T extends keyof RootNavigationParams>(
 ) => void;
 
 export const useNavigate = (): NavigateFunction => {
-  const navigate = useNavigate();
+  const navigate = useNavigateHook();
 
   return (...args) => {
     const rootRoute = args[0];
