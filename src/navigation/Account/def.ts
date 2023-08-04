@@ -1,7 +1,6 @@
 export enum AccountNavigationRoutes {
   EditProfile = 'EditProfile',
   Settings = 'Settings',
-  Dashboard = 'Dashboard',
 }
 
 export type AccountNavigationParams = {

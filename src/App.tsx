@@ -1,8 +1,8 @@
 import './App.css';
 import {Routes} from '@navigation/index';
 
-function App() {
+const App = () => {
   return <Routes />;
-}
+};
 
 export default App;
