@@ -28,9 +28,15 @@
       "@navigation/*": ["navigation/*"],
       "@services/*": ["services/*"],
       "@store/*": ["store/*"],
+      "@styles/*": ["styles/*"],
       "@utilities/*": ["utilities/*"]
     }
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "src/navigation/lib/hook.ts",
+    "src/navigation/lib/wrapper.tsx",
+    "src/navigation/lib/types.ts"
+  ],
   "references": [{"path": "./tsconfig.node.json"}]
 }

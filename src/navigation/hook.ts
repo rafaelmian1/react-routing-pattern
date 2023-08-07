@@ -1,12 +1,12 @@
 import {useNavigate as useNavigateHook} from 'react-router-dom';
-import {RootNavigationParams} from './Root/def';
+import {RootNavigationParams} from './def';
 
 const makeRoute = (...route: string[]) => {
   if (typeof route === 'string') return `/${route}`;
   return `/${route.join('/')}`;
 };
 
-type NavigateFunction = <T extends keyof RootNavigationParams>(
+export type NavigateFunction = <T extends keyof RootNavigationParams>(
   ...args: undefined extends RootNavigationParams[T]
     ? [rootRoute: T]
     : [rootRoute: T, params: RootNavigationParams[T]]
