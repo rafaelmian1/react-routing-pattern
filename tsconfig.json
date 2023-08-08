@@ -10,7 +10,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -32,11 +32,5 @@
       "@utilities/*": ["utilities/*"]
     }
   },
-  "include": [
-    "src",
-    "src/navigation/lib/hook.ts",
-    "src/navigation/lib/wrapper.tsx",
-    "src/navigation/lib/types.ts"
-  ],
-  "references": [{"path": "./tsconfig.node.json"}]
+  "include": ["src", "vite.config.ts"]
 }

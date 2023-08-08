@@ -6,7 +6,7 @@ import {
 import {NotificationPage} from '@pages/Settings/Notification';
 import {RouteWrapper} from '@navigation/wrapper';
 import {SubscriptionPage} from '@pages/Settings/Subscription';
-import {RootNavigationRoutes} from '@navigation/def';
+import {RootNavigationRoutes} from '@navigation/Root/def';
 
 export const accountSettingsRoutes: RouteObject[] = [
   {
@@ -14,10 +14,10 @@ export const accountSettingsRoutes: RouteObject[] = [
     element: <NotificationPage />,
   },
   {
-    path: AccountSettingsNavigationRoutes.Subsctiption,
+    path: AccountSettingsNavigationRoutes.Subscription,
     element: (
       <RouteWrapper<
-        AccountSettingsNavigationParams[AccountSettingsNavigationRoutes.Subsctiption]
+        AccountSettingsNavigationParams[AccountSettingsNavigationRoutes.Subscription]
       >>
         {({params, navigate}) => (
           <SubscriptionPage

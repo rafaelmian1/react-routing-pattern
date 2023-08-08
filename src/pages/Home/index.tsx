@@ -1,6 +1,6 @@
-import {AccountSettingsNavigationRoutes} from '@navigation/Account/Settings/def';
 import {AccountNavigationRoutes} from '@navigation/Account/def';
-import {RootNavigationRoutes} from '@navigation/def';
+import {AppointmentBookingNavigationRoutes} from '@navigation/AppointmentBooking/def';
+import {RootNavigationRoutes} from '@navigation/Root/def';
 import {useNavigate} from '@navigation/hook';
 
 export const HomePage = () => {
@@ -12,9 +12,6 @@ export const HomePage = () => {
         onClick={() =>
           navigate(RootNavigationRoutes.Account, {
             route: AccountNavigationRoutes.Settings,
-            params: {
-              route: AccountSettingsNavigationRoutes.Notifications,
-            },
           })
         }
       >
@@ -27,12 +24,21 @@ export const HomePage = () => {
             route: AccountNavigationRoutes.EditProfile,
             params: {
               userId: '12512312',
-              onEdit: () => navigate(RootNavigationRoutes.Home),
             },
           })
         }
       >
         Go to Account Edit Profile Page
+      </button>
+
+      <button
+        onClick={() =>
+          navigate(RootNavigationRoutes.AppointmentBooking, {
+            route: AppointmentBookingNavigationRoutes.PatientChooser,
+          })
+        }
+      >
+        Go to Appointment Booking Page
       </button>
     </div>
   );

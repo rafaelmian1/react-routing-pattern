@@ -1,9 +1,39 @@
 import {useNavigate as useNavigateHook} from 'react-router-dom';
-import {RootNavigationParams} from './def';
+import {RootNavigationParams} from './Root/def';
 
-const makeRoute = (...route: string[]) => {
-  if (typeof route === 'string') return `/${route}`;
-  return `/${route.join('/')}`;
+const extractRoutes = <T>(params: T, result: string[] = []): string[] => {
+  if (
+    params &&
+    typeof params === 'object' &&
+    'route' in params &&
+    typeof params.route === 'string'
+  ) {
+    result.push(params.route);
+  }
+  if (params && typeof params === 'object' && 'params' in params) {
+    extractRoutes(params.params, result);
+  }
+  return result;
+};
+
+const extractState = <T>(params: T, result: object = {}): object => {
+  if (
+    params &&
+    typeof params === 'object' &&
+    'params' in params &&
+    typeof params.params === 'object'
+  ) {
+    result = {...result, ...params.params};
+    if (params && typeof params === 'object' && 'route' in params) {
+      extractState(params.params, result);
+    }
+  }
+  return result;
+};
+
+const makeRoute = <T>(route: string, params: T) => {
+  const routes = extractRoutes(params, [route]);
+  return `/${routes.join('/')}`;
 };
 
 export type NavigateFunction = <T extends keyof RootNavigationParams>(
@@ -16,12 +46,8 @@ export const useNavigate = (): NavigateFunction => {
   const navigate = useNavigateHook();
 
   return (...args) => {
-    const rootRoute = args[0];
-    if (!args[1]) return navigate(rootRoute);
-
-    const params = args[1];
-    const subRoute = params && 'route' in params ? params.route ?? '' : '';
-    const state = params && 'params' in params ? params.params : undefined;
-    navigate(makeRoute(rootRoute, subRoute), {state});
+    const [rootRoute, base] = args;
+    if (!base) return navigate(rootRoute);
+    navigate(makeRoute(rootRoute, base), {state: extractState(base)});
   };
 };

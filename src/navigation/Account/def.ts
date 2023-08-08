@@ -7,9 +7,6 @@ export enum AccountNavigationRoutes {
 }
 
 export type AccountNavigationParams = {
+  [AccountNavigationRoutes.EditProfile]: {userId: string};
   [AccountNavigationRoutes.Settings]: RouteParams<AccountSettingsNavigationParams>;
-  [AccountNavigationRoutes.EditProfile]: {
-    userId: string;
-    onEdit?: () => void;
-  };
 };

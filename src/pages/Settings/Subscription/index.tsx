@@ -1,7 +1,12 @@
-import {AccountSettingsNavigationParams} from '@navigation/Account/Settings/def';
+import {
+  AccountSettingsNavigationParams,
+  Subscription,
+} from '@navigation/Account/Settings/def';
 import {commonStyles} from '@styles/index';
 
-type SubscriptionPageProps = AccountSettingsNavigationParams['Subsctiption'];
+type SubscriptionPageProps = AccountSettingsNavigationParams['Subscription'] & {
+  onBuy?: (subscription: Subscription) => void;
+};
 
 export const SubscriptionPage = (props: SubscriptionPageProps) => {
   return (

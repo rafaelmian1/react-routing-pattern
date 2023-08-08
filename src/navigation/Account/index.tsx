@@ -1,5 +1,5 @@
 import {RouteObject} from 'react-router-dom';
-import {RootNavigationRoutes} from '@navigation/def';
+import {RootNavigationRoutes} from '@navigation/Root/def';
 import {AccountNavigationParams, AccountNavigationRoutes} from './def';
 import {EditProfilePage} from '@pages/EditProfile';
 import {RouteWrapper} from '../wrapper';
@@ -13,35 +13,39 @@ export const accountRoutes: RouteObject[] = [
     children: [
       {
         path: AccountNavigationRoutes.Settings,
-        element: (
-          <RouteWrapper>
-            {({navigate}) => (
-              <SettingsPage
-                onChooseNotification={() =>
-                  navigate(RootNavigationRoutes.Account, {
-                    route: AccountNavigationRoutes.Settings,
-                    params: {
-                      route: AccountSettingsNavigationRoutes.Notifications,
-                    },
-                  })
-                }
-                onChooseSubscription={() =>
-                  navigate(RootNavigationRoutes.Account, {
-                    route: AccountNavigationRoutes.Settings,
-                    params: {
-                      route: AccountSettingsNavigationRoutes.Subsctiption,
-                      params: {
-                        userId: '12512322',
-                        onBuy: () => navigate(RootNavigationRoutes.Home),
-                      },
-                    },
-                  })
-                }
-              />
-            )}
-          </RouteWrapper>
-        ),
-        children: [...accountSettingsRoutes],
+        children: [
+          {
+            index: true,
+            element: (
+              <RouteWrapper>
+                {({navigate}) => (
+                  <SettingsPage
+                    onChooseNotification={() =>
+                      navigate(RootNavigationRoutes.Account, {
+                        route: AccountNavigationRoutes.Settings,
+                        params: {
+                          route: AccountSettingsNavigationRoutes.Notifications,
+                        },
+                      })
+                    }
+                    onChooseSubscription={() =>
+                      navigate(RootNavigationRoutes.Account, {
+                        route: AccountNavigationRoutes.Settings,
+                        params: {
+                          route: AccountSettingsNavigationRoutes.Subscription,
+                          params: {
+                            userId: '12512322',
+                          },
+                        },
+                      })
+                    }
+                  />
+                )}
+              </RouteWrapper>
+            ),
+          },
+          ...accountSettingsRoutes,
+        ],
       },
       {
         path: AccountNavigationRoutes.EditProfile,

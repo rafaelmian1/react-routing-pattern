@@ -1,5 +1,5 @@
 import './App.css';
-import {Routes} from '@navigation/index';
+import {Routes} from '@navigation/Root/index';
 
 const App = () => {
   return <Routes />;
